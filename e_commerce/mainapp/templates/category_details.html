@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{%block content%}
+
+<section class="text-center mb-4">
+  <div class="row wow fadeIn">
+    {%for product in Products %}
+    <div class="col-lg-2 col-md-2 mb-2">
+      <div class="card">
+        <div class="view overlay">
+          <img src="{{product.image.url}}" class="card-img-top">
+          <a href="{%url 'product' product.pk %}">
+            <div class="mask rgba-white-slight"></div>
+          </a>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">{{product.title}}</h5>
+          <p class="card-text">$ {{product.discount_price}}</p>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{%endblock%}

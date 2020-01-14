@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{%block content%}
+
+<h1>Search Results</h1>
+<ul>
+  <tr>
+    <td colspan="5">
+      <a class='btn btn-primary float-middle' href='/'>Back to home page</a>
+    </td>
+  </tr>
+<div
+<div  
+<section class="text-center mb-4">
+  <div class="row wow fadeIn">
+    {% for item in object_list %}
+    <div class="col-lg-2 col-md-2 mb-2">
+      <div class="card">
+        <div class="view overlay">
+          <img src="{{item.image.url}}" class="card-img-top">
+          <a href="{%url 'product' item.pk %}">
+            <div class="mask rgba-white-slight"></div>
+          </a>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">{{item.title}}</h5>
+          <p class="card-text">$ {{item.discount_price}}</p>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+</div>
+</section>
+{%endblock%}

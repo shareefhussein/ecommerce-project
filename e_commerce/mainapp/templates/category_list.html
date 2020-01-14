@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+{%for category in object_list%}
+<div class="card" style="width: 18rem;">
+  <div class="card-body">
+    <h5 class="card-title">{{category.title}}</h5>
+    <a href="{%url 'category_details' category.pk %}" class="btn btn-primary">View Products</a>
+  </div>
+</div>
+<br><br><br><br>
+{%endfor%}
+{%endblock%}

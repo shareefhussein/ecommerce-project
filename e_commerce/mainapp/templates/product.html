@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<main class="mt-5 pt-4">
+  <div class="container dark-grey-text mt-5">
+
+    <!--Grid row-->
+    <div class="row wow fadeIn">
+
+      <!--Grid column-->
+      <div class="col-md-6 mb-4">
+
+        <img src="{{ item.image.url }}" class="card-img-top">
+
+      </div>
+
+      <div class="col-md-6 mb-4">
+
+        <!--Content-->
+        <div class="p-4">
+
+          <div class="mb-3">
+            <a href="">
+              <span class="badge purple mr-1"></span>
+            </a>
+          </div>
+          <p class="lead font-weight-bold blue-text">{{item.title}}</p>
+          <p class="lead font-weight-light grey-text">{{item.category}}</p>
+          <p class="lead">
+            <span class="mr-3">
+              <del>$ {{item.price}}</del>
+            </span>
+            <span class="mr-3 red-text">$ {{item.discount_price}}</span>
+          </p>
+          <p class="lead font-weight-bold">Description</p>
+
+          <p> {{item.description}} </p>
+          <p class="card-text">{{ item.review}}</p>
+
+          <form class="d-flex justify-content-left">
+            <!-- Default input -->
+            {% if request.user.is_authenticated %}
+
+            <input type="number" value="1" aria-label="Search" class="form-control" style="width: 100px">
+            <a href="{% url 'add-to-cart' item.pk %}" class="btn btn-primary btn-md my-0 p">
+              Add to cart
+              <i class="fas fa-shopping-cart ml-1"></i>
+
+            </a>
+        </div>
+        <tr>
+          <td colspan="5">
+            <a class='btn btn-primary float-right' href='/'>Back to home page </a>
+          </td>
+        </tr>
+        {% else %}
+
+        <p style='font-size: 18px; color:red; font-weight: bold'>you can buy the item after you LOGIN or SIGNUP </p>
+
+        </form>
+      </div>
+      <tr>
+        <td colspan="5">
+          <a class='btn btn-primary float-right' href='/'>Back to home page </a>
+        </td>
+      </tr>
+    </div>
+</main>
+{% endif %}
+{% endblock content %}
