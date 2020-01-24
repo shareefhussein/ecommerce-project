@@ -4,23 +4,28 @@ import datetime
 from django.conf import settings
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.models import User
-from django.core.validators import MaxValueValidator, MinValueValidator
-import os 
-from django.contrib.auth.models import User
+from django_countries.fields import CountryField
 
-ADDRESS_CHOICES = (
-    ('B', 'Billing'),
-    ('S', 'Shipping'),
-)
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    stripe_customer_id = models.CharField(max_length=50, blank=True, null=True)
+    one_click_purchasing = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.user.username
+# ------------------------------------------------------------------------------
 
 class CheckOut(models.Model):
-    user = models.ForeignKey(to =settings.AUTH_USER_MODEL, 
-                            on_delete= 'CASCADE', null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE)
+    country = CountryField(multiple=False)
     street_address = models.CharField(max_length=255)
     apartment_address = models.CharField(max_length=255)
-    zip = models.CharField(max_length=100)
-    address_type = models.CharField(max_length=1, choices=ADDRESS_CHOICES)
+    phone_number = models.IntegerField()    
 # ------------------------------------------------------------------------------
+
 class Category(models.Model):
     title = models.CharField(max_length=300)
     primaryCategory = models.BooleanField(default=False)
@@ -28,6 +33,7 @@ class Category(models.Model):
     def __str__(self):
         return self.title
 # ------------------------------------------------------------------------------
+
 class Item(models.Model):
     title = models.CharField(max_length=100)
     price = models.FloatField()
@@ -40,6 +46,7 @@ class Item(models.Model):
     def __str__(self):
         return self.title  
 # ------------------------------------------------------------------------------
+
 class OrderItem(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
@@ -57,46 +64,31 @@ class OrderItem(models.Model):
     @property
     def get_total_discount_item_price(self):
         return self.quantity * self.item.discount_price
-
-    @property    
-    def get_final_price(self):
-        if self.item.discount_price:
-            return self.get_total_discount_item_price()
-        return self.get_total_item_price()
-
-
 # ------------------------------------------------------------------------------
+
 class Order(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
     items = models.ManyToManyField(OrderItem)
+    ref_code = models.CharField(max_length=20, blank=True, null=True)
     start_date = models.DateTimeField(auto_now_add=True)
     ordered_date =  models.DateTimeField(default=datetime.datetime.now(), blank=True)
     ordered = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.user.username
-
-    @property
-    def get_total(self):
-        total = 0
-        for order_item in self.items.all():
-            total += order_item.get_final_price()
-        return total            
+        return self.user.username        
 # ------------------------------------------------------------------------------
+
 class Tag(models.Model):
     name= models.CharField(max_length=255)
 
     def __str__(self):
         return str(self.name)
 # ------------------------------------------------------------------------------
+
 class ProductTag(models.Model):
     tag = models.ManyToManyField(to='Tag')
     product = models.OneToOneField(to='Item', on_delete=models.CASCADE)
-
-    @classmethod
-    def export_to_csv(cls, path):
-        all_products = ProductTag.objects.all()
 
     def __str__(self):
         return str(self.product) + ' ' + str('#')

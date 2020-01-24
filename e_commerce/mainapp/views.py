@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.utils import timezone
 from django.contrib import messages
-from .models import Item, OrderItem, Order, Category,Tag ,ProductTag, CheckOut
+from .models import Item, OrderItem, Order, Category,Tag ,ProductTag, CheckOut,UserProfile
 from django.shortcuts import render, HttpResponse, get_object_or_404
 from django.views.generic.edit import CreateView
 from django.urls import reverse, reverse_lazy
@@ -19,7 +19,7 @@ class CheckOutCreateView(CreateView):
     model = CheckOut
     template_name = 'checkout.html'
     success_url = reverse_lazy('thank_you')
-    fields= ['street_address', 'apartment_address', 'zip', 'address_type']
+    fields= ['country','street_address', 'apartment_address', 'phone_number']
 # ------------------------------------------------------------------------------
 def thank_you(request):
     return render(request, 'thank_you.html')    
@@ -39,8 +39,8 @@ class ItemDetailView(DetailView):
 @login_required
 def add_to_cart(request, pk):
     item = get_object_or_404(Item, pk=pk)
-    order_item, created = OrderItem.objects.get_or_create(item=item, user=request.user)
-    order_qs = Order.objects.filter(user=request.user)
+    order_item, created = OrderItem.objects.get_or_create(item=item, user=request.user, ordered=False)
+    order_qs = Order.objects.filter(user=request.user, ordered=False)
     if order_qs.exists():
         order = order_qs[0]
         if order.items.filter(item__pk=item.pk).exists():
@@ -59,6 +59,7 @@ def add_to_cart(request, pk):
         order.items.add(order_item)
         messages.info(request, "This item was added to your cart.")
         return redirect("product", pk)
+        
 # ------------------------------------------------------------------------------
 class SignUp(CreateView):
     form_class = UserCreationForm
